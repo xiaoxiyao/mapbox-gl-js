@@ -2,13 +2,12 @@
 
 const ShelfPack = require('@mapbox/shelf-pack');
 const {RGBAImage} = require('../util/image');
-const {imagePosition} = require('./image_atlas');
+const {ImagePosition} = require('./image_atlas');
 const Texture = require('./texture');
 const assert = require('assert');
 
 import type {StyleImage} from '../style/style_image';
 import type Context from '../gl/context';
-import type {ImagePosition} from './image_atlas';
 import type {Bin} from '@mapbox/shelf-pack';
 import type {Callback} from '../types/callback';
 
@@ -180,7 +179,7 @@ class ImageManager {
 
         this.dirty = true;
 
-        const position = imagePosition(bin, image);
+        const position = new ImagePosition(bin, image);
         this.patterns[id] = { bin, position };
         return position;
     }

@@ -7,8 +7,8 @@ const DictionaryCoder = require('../util/dictionary_coder');
 const SymbolBucket = require('../data/bucket/symbol_bucket');
 const util = require('../util/util');
 const assert = require('assert');
-const {makeImageAtlas} = require('../render/image_atlas');
-const {makeGlyphAtlas} = require('../render/glyph_atlas');
+const {ImageAtlas} = require('../render/image_atlas');
+const {GlyphAtlas} = require('../render/glyph_atlas');
 const EvaluationParameters = require('../style/evaluation_parameters');
 const {OverscaledTileID} = require('./tile_id');
 
@@ -149,8 +149,8 @@ class WorkerTile {
             if (error) {
                 return callback(error);
             } else if (glyphMap && imageMap) {
-                const glyphAtlas = makeGlyphAtlas(glyphMap);
-                const imageAtlas = makeImageAtlas(imageMap);
+                const glyphAtlas = new GlyphAtlas(glyphMap);
+                const imageAtlas = new ImageAtlas(imageMap);
 
                 for (const key in buckets) {
                     const bucket = buckets[key];
