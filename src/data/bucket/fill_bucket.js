@@ -64,7 +64,7 @@ class FillBucket implements Bucket {
         for (const {feature, index, sourceLayerIndex} of features) {
             if (this.layers[0]._featureFilter({zoom: this.zoom}, feature)) {
                 const geometry = loadGeometry(feature);
-                this.addFeature(feature, geometry);
+                this.addFeature(feature, geometry, index);
                 options.featureIndex.insert(feature, geometry, index, sourceLayerIndex, this.index);
             }
         }
@@ -91,7 +91,7 @@ class FillBucket implements Bucket {
         this.segments2.destroy();
     }
 
-    addFeature(feature: VectorTileFeature, geometry: Array<Array<Point>>) {
+    addFeature(feature: VectorTileFeature, geometry: Array<Array<Point>>, index: number) {
         for (const polygon of classifyRings(geometry, EARCUT_MAX_RINGS)) {
             let numVertices = 0;
             for (const ring of polygon) {
@@ -146,7 +146,7 @@ class FillBucket implements Bucket {
             triangleSegment.primitiveLength += indices.length / 3;
         }
 
-        this.programConfigurations.populatePaintArrays(this.layoutVertexArray.length, feature);
+        this.programConfigurations.populatePaintArrays(this.layoutVertexArray.length, feature, index);
     }
 }
 
