@@ -2164,7 +2164,7 @@
         "group": "Heatmap"
       },
       "line-progress": {
-        "doc": "Gets the progress along a gradient line. Can only be used in the `line-gradient` property. EXPERIMENTAL.",
+        "doc": "Gets the progress along a gradient line. Can only be used in the `line-gradient` property.",
         "group": "Heatmap"
       },
       "+": {
@@ -2961,7 +2961,7 @@
     },
     "line-gradient": {
       "type": "color",
-      "doc": "¡ EXPERIMENTAL, UNSUPPORTED ! Defines the color of a point of a line based on its progress along the line, if using gradient lines.",
+      "doc": "Defines a gradient with which to color a line feature. Can only be used with GeoJSON sources.",
       "function": "interpolated",
       "zoom-function": false,
       "property-function": false,
