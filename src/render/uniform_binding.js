@@ -4,14 +4,8 @@ const assert = require('assert');
 
 import type Context from '../gl/context';
 
-export interface UniformInterface<T> {
-    context: Context;
-    set(location: WebGLUniformLocation, value: T): void;
-}
-
-export type UniformValue = number | Array<number> | Float32Array;
 export type UniformValues<Us: Object>
-    = $Exact<$ObjMap<Us, <V>(u: Uniform<V>) => UniformValue>>;
+    = $Exact<$ObjMap<Us, <V>(u: Uniform<V>) => V>>;
 export type UniformLocations = {[string]: WebGLUniformLocation};
 export type UniformBindings = {[string]: any};
 // binder uniforms are dynamically created:
@@ -24,64 +18,73 @@ class Uniform<T> {
     constructor(context: Context) {
         this.context = context;
     }
+}
 
-    set(location: WebGLUniformLocation, v: T) {
-        let diff = false;
-        if (!this.current && v) {
-            diff = true;
-        } else if (Array.isArray(this.current) && Array.isArray(v) && this.current !== v) {
-            for (let i = 0; i < this.current.length; i++) {
-                if (this.current[i] !== v[i]) {
+class Uniform1i extends Uniform<number> {
+    set(location: WebGLUniformLocation, v: number): void {
+        if (this.current !== v) {
+            this.current = v;
+            this.context.gl.uniform1i(location, v);
+        }
+    }
+}
+
+class Uniform1f extends Uniform<number> {
+    set(location: WebGLUniformLocation, v: number): void {
+        if (this.current !== v) {
+            this.current = v;
+            this.context.gl.uniform1f(location, v);
+        }
+    }
+}
+
+class Uniform2fv extends Uniform<[number, number]> {
+    set(location: WebGLUniformLocation, v: [number, number]): void {
+        const c = this.current;
+        if (!this.current || v[0] !== [0] || v[1] !== c[1]) {
+            this.current = v;
+            this.context.gl.uniform2f(location, v[0], v[1]);
+        }
+    }
+}
+
+class Uniform3fv extends Uniform<[number, number, number]> {
+    set(location: WebGLUniformLocation, v: [number, number, number]): void {
+        const c = this.current;
+        if (!this.current || v[0] !== [0] || v[1] !== c[1] || v[2] !== c[2]) {
+            this.current = v;
+            this.context.gl.uniform3f(location, v[0], v[1], v[2]);
+        }
+    }
+}
+
+class Uniform4fv extends Uniform<[number, number, number, number]> {
+    set(location: WebGLUniformLocation, v: [number, number, number, number]): void {
+        const c = this.current;
+        if (!this.current || v[0] !== [0] || v[1] !== c[1] || v[2] !== c[2] || v[3] !== c[3]) {
+            this.current = v;
+            this.context.gl.uniform4f(location, v[0], v[1], v[2], v[3]);
+        }
+    }
+}
+
+class UniformMatrix4fv extends Uniform<Float32Array> {
+    set(location: WebGLUniformLocation, v: Float32Array): void {
+        let diff = !this.current;
+
+        if (this.current) {
+            for (let i = 0; i < 16; i++) {
+                if (v[i] !== this.current[i]) {
                     diff = true;
                     break;
                 }
             }
-        } else if (this.current !== v) {
-            diff = true;
         }
 
         if (diff) {
             this.current = v;
-            this._set(location, v);
+            this.context.gl.uniformMatrix4fv(location, false, v);
         }
-    }
-
-    _set(location: WebGLUniformLocation, v: T) {}  // eslint-disable-line
-}
-
-class Uniform1i extends Uniform<number> implements UniformInterface<number> {
-    _set(location: WebGLUniformLocation, v: number): void {
-        this.context.gl.uniform1i(location, v);
-    }
-}
-
-class Uniform1f extends Uniform<number> implements UniformInterface<number> {
-    _set(location: WebGLUniformLocation, v: number): void {
-        this.context.gl.uniform1f(location, v);
-    }
-}
-
-class Uniform2fv extends Uniform<Array<number>> implements UniformInterface<Array<number>> {
-    _set(location: WebGLUniformLocation, v: Array<number>): void {
-        this.context.gl.uniform2fv(location, v);
-    }
-}
-
-class Uniform3fv extends Uniform<Array<number>> implements UniformInterface<Array<number>> {
-    _set(location: WebGLUniformLocation, v: Array<number>): void {
-        this.context.gl.uniform3fv(location, v);
-    }
-}
-
-class Uniform4fv extends Uniform<Array<number>> implements UniformInterface<Array<number>> {
-    _set(location: WebGLUniformLocation, v: Array<number>): void {
-        this.context.gl.uniform4fv(location, v);
-    }
-}
-
-class UniformMatrix4fv extends Uniform<Float32Array> implements UniformInterface<Float32Array> {
-    _set(location: WebGLUniformLocation, v: Float32Array): void {
-        this.context.gl.uniformMatrix4fv(location, false, v);
     }
 }
 

@@ -127,7 +127,7 @@ const fillPatternUniformValues = (
 
 const fillOutlineUniformValues = (
     matrix: Float32Array,
-    drawingBufferSize: Array<number>
+    drawingBufferSize: [number, number]
 ): UniformValues<FillOutlineUniformsType> => ({
     'u_matrix': matrix,
     'u_world': drawingBufferSize
@@ -138,7 +138,7 @@ const fillOutlinePatternUniformValues = (
     painter: Painter,
     image: CrossFaded<string>,
     tile: {tileID: OverscaledTileID, tileSize: number},
-    drawingBufferSize: Array<number>
+    drawingBufferSize: [number, number]
 ): UniformValues<FillOutlinePatternUniformsType> => util.extend(
     fillPatternUniformValues(matrix, painter, image, tile),
     {

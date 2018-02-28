@@ -40,7 +40,7 @@ const circleUniformValues = (
 ): UniformValues<CircleUniformsType> => {
     const transform = painter.transform;
 
-    let pitchWithMap, extrudeScale;
+    let pitchWithMap: boolean, extrudeScale: [number, number];
     if (layer.paint.get('circle-pitch-alignment') === 'map') {
         const pixelRatio = pixelsToTileUnits(tile, 1, transform.zoom);
         pitchWithMap = true;

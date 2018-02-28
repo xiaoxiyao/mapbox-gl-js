@@ -34,7 +34,7 @@ export type TextureImage =
 
 class Texture {
     context: Context;
-    size: Array<number>;
+    size: [number, number];
     texture: WebGLTexture;
     format: TextureFormat;
     filter: ?TextureFilter;

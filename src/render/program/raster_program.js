@@ -47,7 +47,7 @@ const rasterUniforms = (context: Context): Uniforms<RasterUniformsType> => new U
 
 const rasterUniformValues = (
     matrix: Float32Array,
-    parentTL: Array<number>,
+    parentTL: [number, number],
     parentScaleBy: number,
     fade: {mix: number, opacity: number},
     layer: RasterStyleLayer

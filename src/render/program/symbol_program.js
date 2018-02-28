@@ -104,7 +104,7 @@ const symbolIconUniformValues = (
     labelPlaneMatrix: Float32Array,
     glCoordMatrix: Float32Array,
     isText: boolean,
-    texSize: Array<number>
+    texSize: [number, number]
 ): UniformValues<SymbolIconUniformsType> => {
     const transform = painter.transform;
 
@@ -138,7 +138,7 @@ const symbolSDFUniformValues = (
     labelPlaneMatrix: Float32Array,
     glCoordMatrix: Float32Array,
     isText: boolean,
-    texSize: Array<number>,
+    texSize: [number, number],
     isHalo: boolean
 ): UniformValues<SymbolSDFUniformsType> => {
     const transform = painter.transform;

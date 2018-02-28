@@ -94,7 +94,7 @@ function drawLayerSymbols(painter, sourceCache, layer, coords, isText, translate
 
         context.activeTexture.set(gl.TEXTURE0);
 
-        let texSize;
+        let texSize: [number, number];
         if (isText) {
             tile.glyphAtlasTexture.bind(gl.LINEAR, gl.CLAMP_TO_EDGE);
             texSize = tile.glyphAtlasTexture.size;
