@@ -266,3 +266,37 @@ exports.charHasRotatedVerticalOrientation = function(char: number) {
     return !(exports.charHasUprightVerticalOrientation(char) ||
              exports.charHasNeutralVerticalOrientation(char));
 };
+
+exports.charInRenderableScript = function(char: number, canRenderRTL: boolean) {
+    // This is a rough heuristic: whether we "can render" a script
+    // actually depends on the properties of the font being used
+    // and whether differences from the ideal rendering are considered
+    // semantically significant.
+
+    // Even in Latin script, we "can't render" combinations such as the fi
+    // ligature, but we don't consider that semantically significant.
+    if (!canRenderRTL &&
+        ((char >= 0x0590 && char <= 0x08FF) ||
+         isChar['Arabic Presentation Forms-A'](char) ||
+         isChar['Arabic Presentation Forms-B'](char))) {
+        // Block out bulk of Hebrew, Arabic and other RTL scripts
+        return false;
+    }
+    if (char >= 0x0900 && char <= 0x109F) {
+        // Block out Indic and Southeast Asian scripts from Devanagari
+        // to Myanmar. Note that some scripts such as Thai and Lao mainly
+        // rely on relatively simple diacritic placement, and depending
+        // on the font, rendering may be legible if not fully correct.
+        return false;
+    }
+    return true;
+};
+
+exports.isStringRenderable = function(chars: string, canRenderRTL: boolean) {
+    for (const char of chars) {
+        if (!exports.charInRenderableScript(char.charCodeAt(0), canRenderRTL)) {
+            return false;
+        }
+    }
+    return true;
+};
