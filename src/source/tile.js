@@ -20,6 +20,7 @@ const Texture = require('../render/texture');
 const {SegmentVector} = require('../data/segment');
 const {TriangleIndexArray} = require('../data/index_array_type');
 const browser = require('../util/browser');
+const EvaluationParameters = require('../style/evaluation_parameters');
 
 const CLOCK_SKEW_RETRY_TIMEOUT = 30000;
 
@@ -286,7 +287,7 @@ class Tile {
 
         for (let i = 0; i < layer.length; i++) {
             const feature = layer.feature(i);
-            if (filter({zoom: this.tileID.overscaledZ}, feature)) {
+            if (filter(new EvaluationParameters(this.tileID.overscaledZ), feature)) {
                 const geojsonFeature = new GeoJSONFeature(feature, coord.z, coord.x, coord.y);
                 (geojsonFeature: any).tile = coord;
                 result.push(geojsonFeature);

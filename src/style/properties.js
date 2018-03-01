@@ -6,10 +6,10 @@ const interpolate = require('../style-spec/util/interpolate');
 const {normalizePropertyExpression} = require('../style-spec/expression');
 const Color = require('../style-spec/util/color');
 const {register} = require('../util/web_worker_transfer');
+const EvaluationParameters = require('./evaluation_parameters');
 
 import type {StylePropertySpecification} from '../style-spec/style-spec';
 import type {CrossFaded} from './cross_faded';
-import type EvaluationParameters from './evaluation_parameters';
 
 import type {
     Feature,
@@ -597,9 +597,9 @@ class CrossFadedProperty<T> implements Property<T, ?CrossFaded<T>> {
         } else {
             assert(!value.isDataDriven());
             return this._calculate(
-                value.expression.evaluate({zoom: parameters.zoom - 1.0}),
-                value.expression.evaluate({zoom: parameters.zoom}),
-                value.expression.evaluate({zoom: parameters.zoom + 1.0}),
+                value.expression.evaluate(new EvaluationParameters(parameters.zoom - 1.0, parameters)),
+                value.expression.evaluate(parameters),
+                value.expression.evaluate(new EvaluationParameters(parameters.zoom + 1.0, parameters)),
                 parameters);
         }
     }

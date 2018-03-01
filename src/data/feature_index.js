@@ -12,6 +12,7 @@ const GeoJSONFeature = require('../util/vectortile_to_geojson');
 const arraysIntersect = require('../util/util').arraysIntersect;
 const {OverscaledTileID} = require('../source/tile_id');
 const {register} = require('../util/web_worker_transfer');
+const EvaluationParameters = require('../style/evaluation_parameters');
 
 import type CollisionIndex from '../symbol/collision_index';
 import type StyleLayer from '../style/style_layer';
@@ -156,7 +157,7 @@ class FeatureIndex {
             const sourceLayer = this.vtLayers[sourceLayerName];
             const feature = sourceLayer.feature(match.featureIndex);
 
-            if (!filter({zoom: this.tileID.overscaledZ}, feature)) continue;
+            if (!filter(new EvaluationParameters(this.tileID.overscaledZ), feature)) continue;
 
             let geometry = null;
 

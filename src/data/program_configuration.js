@@ -11,6 +11,7 @@ const {
     StructArrayLayout2f8,
     StructArrayLayout4f16
 } = require('./array_types');
+const EvaluationParameters = require('../style/evaluation_parameters');
 
 import type Context from '../gl/context';
 import type {TypedStyleLayer} from '../style/style_layer/typed_style_layer';
@@ -136,7 +137,7 @@ class SourceExpressionBinder<T> implements Binder<T> {
         const start = paintArray.length;
         paintArray.reserve(length);
 
-        const value = this.expression.evaluate({zoom: 0}, feature);
+        const value = this.expression.evaluate(new EvaluationParameters(0), feature);
 
         if (this.type === 'color') {
             const color = packColor(value);
@@ -208,8 +209,8 @@ class CompositeExpressionBinder<T> implements Binder<T> {
         const start = paintArray.length;
         paintArray.reserve(length);
 
-        const min = this.expression.evaluate({zoom: this.zoom    }, feature);
-        const max = this.expression.evaluate({zoom: this.zoom + 1}, feature);
+        const min = this.expression.evaluate(new EvaluationParameters(this.zoom), feature);
+        const max = this.expression.evaluate(new EvaluationParameters(this.zoom + 1), feature);
 
         if (this.type === 'color') {
             const minColor = packColor(min);

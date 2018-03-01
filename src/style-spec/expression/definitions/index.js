@@ -519,6 +519,18 @@ CompoundExpression.register(expressions, {
         [BooleanType],
         (ctx, [b]) => !b.evaluate(ctx)
     ],
+    'is-renderable': [
+        BooleanType,
+        [StringType],
+        // At parse time this will always return true, so we need to exclude this expression with isGlobalPropertyConstant
+        (ctx, [s]) => {
+            if (ctx.globals && ctx.globals.isRenderable) {
+                const isRenderable = ctx.globals.isRenderable; // For flow
+                return isRenderable(s.evaluate(ctx));
+            }
+            return true;
+        }
+    ],
     'upcase': [
         StringType,
         [StringType],

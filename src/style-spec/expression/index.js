@@ -28,10 +28,11 @@ export type Feature = {
     +properties: {[string]: any}
 };
 
-export type GlobalProperties = {
+export type GlobalProperties = $ReadOnly<{
     zoom: number,
-    heatmapDensity?: number
-};
+    heatmapDensity?: number,
+    isRenderable?: (string) => boolean
+}>;
 
 class StyleExpression {
     expression: Expression;
