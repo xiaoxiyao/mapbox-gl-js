@@ -35,6 +35,7 @@ import type VertexBuffer from '../gl/vertex_buffer';
 import type {OverscaledTileID} from './tile_id';
 import type Framebuffer from '../gl/framebuffer';
 import type {PerformanceResourceTiming} from '../types/performance_resource_timing';
+import type {FeatureStates} from './source_cache';
 
 export type TileState =
     | 'loading'   // Tile data is in the process of loading.
@@ -419,6 +420,24 @@ class Tile {
                 // Max value for `setTimeout` implementations is a 32 bit integer; cap this accordingly
                 return Math.min(this.expirationTime - new Date().getTime(), Math.pow(2, 31) - 1);
             }
+        }
+    }
+
+    updateFeatureState(states: FeatureStates) {
+        if (!this.rawTileData || Object.keys(states).length === 0) return;
+
+        if (!this.vtLayers) {
+            this.vtLayers = new vt.VectorTile(new Protobuf(this.rawTileData)).layers;
+        }
+
+        for (const i in this.buckets) {
+            const bucket = this.buckets[i];
+            // Buckets are grouped by common source-layer
+            const sourceLayerId = bucket.layers[0]['sourceLayer'] || '';
+            const sourceLayer = this.vtLayers._geojsonTileLayer || this.vtLayers[sourceLayerId];
+            if (!sourceLayer) return;
+
+            bucket.update(states, sourceLayer);
         }
     }
 }
