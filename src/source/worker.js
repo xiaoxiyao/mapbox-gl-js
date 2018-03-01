@@ -56,7 +56,7 @@ class Worker {
         };
 
         this.self.registerRTLTextPlugin = (rtlTextPlugin: {applyArabicShaping: Function, processBidirectionalText: Function}) => {
-            if (globalRTLTextPlugin.applyArabicShaping || globalRTLTextPlugin.processBidirectionalText) {
+            if (globalRTLTextPlugin.isLoaded()) {
                 throw new Error('RTL text plugin already registered.');
             }
             globalRTLTextPlugin['applyArabicShaping'] = rtlTextPlugin.applyArabicShaping;
@@ -133,20 +133,20 @@ class Worker {
             this.self.importScripts(params.url);
             callback();
         } catch (e) {
-            callback(e);
+            callback(e.toString());
         }
     }
 
     loadRTLTextPlugin(map: string, pluginURL: string, callback: Callback<void>) {
         try {
-            if (!globalRTLTextPlugin.applyArabicShaping && !globalRTLTextPlugin.processBidirectionalText) {
+            if (!globalRTLTextPlugin.isLoaded()) {
                 this.self.importScripts(pluginURL);
-                if (!globalRTLTextPlugin.applyArabicShaping || !globalRTLTextPlugin.processBidirectionalText) {
-                    callback(new Error(`RTL Text Plugin failed to import scripts from ${pluginURL}`));
-                }
+                callback(globalRTLTextPlugin.isLoaded() ?
+                    null :
+                    new Error(`RTL Text Plugin failed to import scripts from ${pluginURL}`));
             }
         } catch (e) {
-            callback(e);
+            callback(e.toString());
         }
     }
 
