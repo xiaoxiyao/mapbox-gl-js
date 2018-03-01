@@ -41,7 +41,7 @@ class Uniform1f extends Uniform<number> {
 class Uniform2fv extends Uniform<[number, number]> {
     set(location: WebGLUniformLocation, v: [number, number]): void {
         const c = this.current;
-        if (!this.current || v[0] !== [0] || v[1] !== c[1]) {
+        if (!this.current || v[0] !== c[0] || v[1] !== c[1]) {
             this.current = v;
             this.context.gl.uniform2f(location, v[0], v[1]);
         }
@@ -51,7 +51,7 @@ class Uniform2fv extends Uniform<[number, number]> {
 class Uniform3fv extends Uniform<[number, number, number]> {
     set(location: WebGLUniformLocation, v: [number, number, number]): void {
         const c = this.current;
-        if (!this.current || v[0] !== [0] || v[1] !== c[1] || v[2] !== c[2]) {
+        if (!this.current || v[0] !== c[0] || v[1] !== c[1] || v[2] !== c[2]) {
             this.current = v;
             this.context.gl.uniform3f(location, v[0], v[1], v[2]);
         }
@@ -61,7 +61,7 @@ class Uniform3fv extends Uniform<[number, number, number]> {
 class Uniform4fv extends Uniform<[number, number, number, number]> {
     set(location: WebGLUniformLocation, v: [number, number, number, number]): void {
         const c = this.current;
-        if (!this.current || v[0] !== [0] || v[1] !== c[1] || v[2] !== c[2] || v[3] !== c[3]) {
+        if (!this.current || v[0] !== c[0] || v[1] !== c[1] || v[2] !== c[2] || v[3] !== c[3]) {
             this.current = v;
             this.context.gl.uniform4f(location, v[0], v[1], v[2], v[3]);
         }
