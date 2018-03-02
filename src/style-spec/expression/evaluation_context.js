@@ -33,6 +33,10 @@ class EvaluationContext {
         return this.feature && this.feature.properties || {};
     }
 
+    state() {
+        return this.feature && this.feature.state || {};
+    }
+
     pushScope(bindings: Array<[string, Expression]>) {
         this.scope = this.scope.concat(bindings);
     }
