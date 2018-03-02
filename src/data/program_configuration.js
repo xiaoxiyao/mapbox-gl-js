@@ -398,7 +398,7 @@ class ProgramConfiguration {
 
                 for (const property in this.binders) {
                     const binder: Binder<any> = this.binders[property];
-                    //TODO: AHM: Remove after https://github.com/mapbox/mapbox-gl-js/issues/6255
+                    //AHM: Remove after https://github.com/mapbox/mapbox-gl-js/issues/6255
                     const value = layer.paint.get(property);
                     if (binder.expression) {
                         binder.expression = value.value;
