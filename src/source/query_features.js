@@ -4,15 +4,15 @@ import type SourceCache from './source_cache';
 import type StyleLayer from '../style/style_layer';
 import type Coordinate from '../geo/coordinate';
 import type CollisionIndex from '../symbol/collision_index';
+import type Transform from '../geo/transform';
 
 exports.rendered = function(sourceCache: SourceCache,
                             styleLayers: {[string]: StyleLayer},
                             queryGeometry: Array<Coordinate>,
                             params: { filter: FilterSpecification, layers: Array<string> },
-                            zoom: number,
-                            bearing: number,
+                            transform: Transform,
                             collisionIndex: ?CollisionIndex) {
-    const pitchScaleFactor = sourceCache.transform.getPitchScaleFactor();
+    const pitchScaleFactor = transform.getPitchScaleFactor();
     const tilesIn = sourceCache.tilesIn(queryGeometry, pitchScaleFactor);
 
     tilesIn.sort(sortTilesIn);
@@ -26,8 +26,9 @@ exports.rendered = function(sourceCache: SourceCache,
                 tileIn.queryGeometry,
                 tileIn.scale,
                 params,
-                bearing,
-                sourceCache.transform.cameraToCenterDistance,
+                transform.angle,
+                transform.cameraToCenterDistance,
+                transform,
                 pitchScaleFactor,
                 sourceCache.transform.calculatePosMatrix(tileIn.tileID.toUnwrapped()),
                 sourceCache.id,

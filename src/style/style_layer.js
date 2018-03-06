@@ -18,6 +18,7 @@ import type Point from '@mapbox/point-geometry';
 import type {FeatureFilter} from '../style-spec/feature_filter';
 import type {TransitionParameters} from './properties';
 import type EvaluationParameters from './evaluation_parameters';
+import type Transform from '../geo/transform';
 
 const TRANSITION_SUFFIX = '-transition';
 
@@ -51,7 +52,8 @@ class StyleLayer extends Evented {
                               bearing: number,
                               pixelsToTileUnits: number,
                               cameraToCenterDistance: number,
-                              posMatrix: Float32Array) => boolean;
+                              posMatrix: Float32Array,
+                              transform: Transform) => boolean;
 
     constructor(layer: LayerSpecification, properties: {layout?: Properties<*>, paint: Properties<*>}) {
         super();

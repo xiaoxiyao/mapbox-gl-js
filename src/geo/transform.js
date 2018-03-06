@@ -561,6 +561,9 @@ class Transform {
     }
 
     getPitchScaleFactor() {
+        // calcMatrices hasn't run yet
+        if (!this.pixelMatrixInverse) return 1;
+
         const coord = this.pointCoordinate(new Point(0, 0)).zoomTo(this.zoom);
         const p = [coord.column * this.tileSize, coord.row * this.tileSize, 0, 1];
         const topPoint = vec4.transformMat4(p, p, this.pixelMatrix);

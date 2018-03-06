@@ -35,6 +35,7 @@ import type VertexBuffer from '../gl/vertex_buffer';
 import type {OverscaledTileID} from './tile_id';
 import type Framebuffer from '../gl/framebuffer';
 import type {PerformanceResourceTiming} from '../types/performance_resource_timing';
+import type Transform from '../geo/transform';
 
 export type TileState =
     | 'loading'   // Tile data is in the process of loading.
@@ -243,6 +244,7 @@ class Tile {
                           params: { filter: FilterSpecification, layers: Array<string> },
                           bearing: number,
                           cameraToCenterDistance: number,
+                          transform: Transform,
                           pitchScaleFactor: number,
                           posMatrix: Float32Array,
                           sourceID: string,
@@ -270,6 +272,7 @@ class Tile {
             bearing: bearing,
             cameraToCenterDistance: cameraToCenterDistance,
             posMatrix: posMatrix,
+            transform: transform,
             params: params,
             queryPadding: this.queryPadding * pitchScaleFactor,
             collisionBoxArray: this.collisionBoxArray,
