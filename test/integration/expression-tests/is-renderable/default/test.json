@@ -1,0 +1,14 @@
+{
+  "expression": ["is-renderable", "שָׁלוֹם"],
+  "inputs": [[{}, {}]],
+  "expected": {
+    "compiled": {
+      "result": "success",
+      "isFeatureConstant": true,
+      "isZoomConstant": true,
+      "type": "boolean"
+    },
+    "outputs": [true],
+    "serialized": true
+  }
+}
