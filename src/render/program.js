@@ -90,7 +90,6 @@ class Program<Us: UniformBindings> {
             }
         }
 
-        this.binderUniforms = configuration.getUniformBindings(context);
         this.fixedUniforms = fixedUniforms(context);
     }
 
@@ -117,7 +116,11 @@ class Program<Us: UniformBindings> {
         context.setColorMode(colorMode);
 
         this.fixedUniforms.set(this.uniforms, uniformValues);
-        if (configuration) this.binderUniforms.set(this.uniforms, configuration.getUniforms(currentProperties, {zoom: (zoom: any)}));
+        if (configuration) {
+            const invalidate = this.configuration && this.configuration !== configuration;
+            configuration.setUniforms(context, this, currentProperties, {zoom: (zoom: any)}, invalidate);
+            this.configuration = configuration;
+        }
 
         const primitiveSize = {
             [gl.LINES]: 2,
