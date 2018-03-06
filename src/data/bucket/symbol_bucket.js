@@ -33,6 +33,7 @@ const verticalizePunctuation = require('../../util/verticalize_punctuation');
 const Anchor = require('../../symbol/anchor');
 const {getSizeData} = require('../../symbol/symbol_size');
 const {register} = require('../../util/web_worker_transfer');
+const EvaluationParameters = require('../../style/evaluation_parameters');
 
 import type {Feature as ExpressionFeature} from '../../style-spec/expression';
 import type {
@@ -350,7 +351,7 @@ class SymbolBucket implements Bucket {
 
         const icons = options.iconDependencies;
         const stacks = options.glyphDependencies;
-        const globalProperties =  {zoom: this.zoom};
+        const globalProperties = new EvaluationParameters(this.zoom);
 
         for (const {feature, index, sourceLayerIndex} of features) {
             if (!layer._featureFilter(globalProperties, feature)) {
