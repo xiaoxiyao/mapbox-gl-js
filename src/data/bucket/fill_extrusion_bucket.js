@@ -49,6 +49,7 @@ class FillExtrusionBucket implements Bucket {
     overscaling: number;
     layers: Array<FillExtrusionStyleLayer>;
     layerIds: Array<string>;
+    stateDependent: boolean;
 
     layoutVertexArray: FillExtrusionLayoutArray;
     layoutVertexBuffer: VertexBuffer;
@@ -59,6 +60,7 @@ class FillExtrusionBucket implements Bucket {
     programConfigurations: ProgramConfigurationSet<FillExtrusionStyleLayer>;
     segments: SegmentVector;
     uploaded: boolean;
+    changed: boolean;
 
     constructor(options: BucketParameters<FillExtrusionStyleLayer>) {
         this.zoom = options.zoom;
@@ -66,6 +68,7 @@ class FillExtrusionBucket implements Bucket {
         this.layers = options.layers;
         this.layerIds = this.layers.map(layer => layer.id);
         this.index = options.index;
+        this.stateDependent = this.layers[0].isStateDependant();
 
         this.layoutVertexArray = new FillExtrusionLayoutArray();
         this.indexArray = new TriangleIndexArray();
@@ -84,22 +87,26 @@ class FillExtrusionBucket implements Bucket {
     }
 
     update(states: FeatureStates, vtLayer: VectorTileLayer) {
-        //TODO: AHM: Determine if layers have state dependent paint properties!
-        const affectedLayers = this.layers;
-        const changed = this.programConfigurations.updatePaintArrays(states, vtLayer, affectedLayers);
-        if (changed) {
-            this.uploaded = false;
-        }
+        if (!this.stateDependent) return;
+        this.changed = this.programConfigurations.updatePaintArrays(states, vtLayer, this.layers);
     }
 
     isEmpty() {
         return this.layoutVertexArray.length === 0;
     }
 
+    uploadPending() {
+        return !this.uploaded || this.change;
+    }
+
     upload(context: Context) {
-        this.layoutVertexBuffer = context.createVertexBuffer(this.layoutVertexArray, layoutAttributes);
-        this.indexBuffer = context.createIndexBuffer(this.indexArray);
+        if (!this.uploaded) {
+            this.layoutVertexBuffer = context.createVertexBuffer(this.layoutVertexArray, layoutAttributes);
+            this.indexBuffer = context.createIndexBuffer(this.indexArray);
+        }
         this.programConfigurations.upload(context);
+        this.uploaded = true;
+        this.changed = false;
     }
 
     destroy() {

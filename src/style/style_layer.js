@@ -5,6 +5,7 @@ const util = require('../util/util');
 const styleSpec = require('../style-spec/reference/latest');
 const validateStyle = require('./validate_style');
 const Evented = require('../util/evented');
+const {PossiblyEvaluatedPropertyValue} = require('./properties');
 
 const {
     Layout,
@@ -201,6 +202,21 @@ class StyleLayer extends Evented {
 
     resize() {
         // noop
+    }
+
+    isStateDependent() {
+        for (const property in (this: any).paint._values) {
+            const value = (this: any).paint.get(property);
+            if (!(value instanceof PossiblyEvaluatedPropertyValue) || !value.property.specification['property-function']) {
+                continue;
+            }
+
+            if ((value.value.kind === 'source' || value.value.kind === 'composite') &&
+                value.value.isStateDependant) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

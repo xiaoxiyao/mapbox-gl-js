@@ -44,7 +44,7 @@ class VertexBuffer {
         this.length = array.length;
         this.attributes = attributes;
         this.itemSize = array.bytesPerElement;
-        this.dynamicDraw = true; //dynamicDraw;
+        this.dynamicDraw = dynamicDraw;
 
         this.context = context;
         const gl = context.gl;
