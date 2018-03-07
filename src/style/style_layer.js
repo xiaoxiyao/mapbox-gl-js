@@ -212,7 +212,7 @@ class StyleLayer extends Evented {
             }
 
             if ((value.value.kind === 'source' || value.value.kind === 'composite') &&
-                value.value.isStateDependant) {
+                value.value.isStateDependent) {
                 return true;
             }
         }

@@ -336,7 +336,7 @@ class SymbolBucket implements Bucket {
                 }
 
                 if ((value.value.kind === 'source' || value.value.kind === 'composite') &&
-                    value.value.isStateDependant) {
+                    value.value.isStateDependent) {
                     if (/^text/.test(property.name)) this.stateDependentText = true;
                     else if (/^icon/.test(property.name)) this.stateDependentIcon = true;
                 }

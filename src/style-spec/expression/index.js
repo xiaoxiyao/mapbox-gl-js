@@ -131,12 +131,12 @@ function createExpression(expression: mixed,
 
 class ZoomConstantExpression<Kind> {
     kind: Kind;
-    isStateDependant: boolean;
+    isStateDependent: boolean;
     _styleExpression: StyleExpression;
     constructor(kind: Kind, expression: StyleExpression) {
         this.kind = kind;
         this._styleExpression = expression;
-        this.isStateDependant = kind !== 'constant' && !isConstant.isStateConstant(expression.expression);
+        this.isStateDependent = kind !== 'constant' && !isConstant.isStateConstant(expression.expression);
     }
     evaluate(globals: GlobalProperties, feature?: Feature): any {
         return this._styleExpression.evaluate(globals, feature);
@@ -146,7 +146,7 @@ class ZoomConstantExpression<Kind> {
 class ZoomDependentExpression<Kind> {
     kind: Kind;
     zoomStops: Array<number>;
-    isStateDependant: boolean;
+    isStateDependent: boolean;
 
     _styleExpression: StyleExpression;
     _interpolationType: ?InterpolationType;
@@ -155,7 +155,7 @@ class ZoomDependentExpression<Kind> {
         this.kind = kind;
         this.zoomStops = zoomCurve.labels;
         this._styleExpression = expression;
-        this.isStateDependant = kind !== 'camera' && !isConstant.isStateConstant(expression.expression);
+        this.isStateDependent = kind !== 'camera' && !isConstant.isStateConstant(expression.expression);
         if (zoomCurve instanceof Interpolate) {
             this._interpolationType = zoomCurve.interpolation;
         }
@@ -181,7 +181,7 @@ export type ConstantExpression = {
 
 export type SourceExpression = {
     kind: 'source',
-    isStateDependant: boolean,
+    isStateDependent: boolean,
     +evaluate: (globals: GlobalProperties, feature?: Feature) => any,
 };
 
@@ -194,7 +194,7 @@ export type CameraExpression = {
 
 export type CompositeExpression = {
     kind: 'composite',
-    isStateDependant: boolean,
+    isStateDependent: boolean,
     +evaluate: (globals: GlobalProperties, feature?: Feature) => any,
     +interpolationFactor: (input: number, lower: number, upper: number) => number,
     zoomStops: Array<number>

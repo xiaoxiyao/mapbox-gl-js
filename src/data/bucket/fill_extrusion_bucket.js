@@ -68,7 +68,7 @@ class FillExtrusionBucket implements Bucket {
         this.layers = options.layers;
         this.layerIds = this.layers.map(layer => layer.id);
         this.index = options.index;
-        this.stateDependent = this.layers[0].isStateDependant();
+        this.stateDependent = this.layers[0].isStateDependent();
 
         this.layoutVertexArray = new FillExtrusionLayoutArray();
         this.indexArray = new TriangleIndexArray();
