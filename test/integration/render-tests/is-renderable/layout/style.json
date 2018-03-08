@@ -58,7 +58,7 @@
             "layout": {
                 "symbol-placement": "point",
                 "text-field": ["case",
-                    ["is-renderable", ["get", "name"]],
+                    ["is-supported-script", ["get", "name"]],
                     ["get", "name"],
                     "Not renderable"
                 ],

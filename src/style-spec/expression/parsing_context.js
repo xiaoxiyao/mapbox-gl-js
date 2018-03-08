@@ -200,5 +200,5 @@ function isConstant(expression: Expression) {
     }
 
     return isFeatureConstant(expression) &&
-        isGlobalPropertyConstant(expression, ['zoom', 'heatmap-density', 'is-renderable']);
+        isGlobalPropertyConstant(expression, ['zoom', 'heatmap-density', 'is-supported-script']);
 }

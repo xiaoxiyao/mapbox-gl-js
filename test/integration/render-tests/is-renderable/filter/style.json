@@ -55,7 +55,7 @@
             "id": "symbol",
             "type": "symbol",
             "source": "geojson",
-            "filter": ["is-renderable", ["get", "name"]],
+            "filter": ["is-supported-script", ["get", "name"]],
             "layout": {
                 "symbol-placement": "point",
                 "text-field": ["get", "name"],

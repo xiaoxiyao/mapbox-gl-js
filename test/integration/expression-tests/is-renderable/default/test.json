@@ -1,5 +1,5 @@
 {
-  "expression": ["is-renderable", "שָׁלוֹם"],
+  "expression": ["is-supported-script", "שָׁלוֹם"],
   "inputs": [[{}, {}]],
   "expected": {
     "compiled": {

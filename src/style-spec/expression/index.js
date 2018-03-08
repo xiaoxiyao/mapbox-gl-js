@@ -31,7 +31,7 @@ export type Feature = {
 export type GlobalProperties = $ReadOnly<{
     zoom: number,
     heatmapDensity?: number,
-    isRenderable?: (string) => boolean
+    isSupportedScript?: (string) => boolean
 }>;
 
 class StyleExpression {

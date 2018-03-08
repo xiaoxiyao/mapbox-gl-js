@@ -29,7 +29,7 @@ class EvaluationParameters {
         }
     }
 
-    isRenderable(str: string): boolean {
+    isSupportedScript(str: string): boolean {
         return isStringRenderable(str, rtlTextPlugin.isLoaded());
     }
 
