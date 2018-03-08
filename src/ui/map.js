@@ -1344,7 +1344,7 @@ class Map extends Camera {
      * 
      * @param {string} source The source identifier for the feature.
      * @param {string} feature The unique feature identifier from the source data.
-     * @param {string} state The name of the state to be set.
+     * @param {string} key The name of the state to be set.
      * @param {string | number | boolean} value The value to be set.
      * @param {string} sourceLayer (optional) The source-layer identifier for Vector Tile sources.
      */
@@ -1358,7 +1358,7 @@ class Map extends Camera {
      * 
      * @param {string} source The source identifier for the feature.
      * @param {string} feature The unique feature identifier from the source data.
-     * @param {string} state (optional) The name of the state. When null, all state values are returned.
+     * @param {string} key (optional) The name of the state. When null, all state values are returned.
      * @param {string} sourceLayer (optional) The source-layer identifier for Vector Tile sources.
      * 
      * @returns The value of the specified specified state or all states.
