@@ -33,7 +33,6 @@ const verticalizePunctuation = require('../../util/verticalize_punctuation');
 const Anchor = require('../../symbol/anchor');
 const {getSizeData} = require('../../symbol/symbol_size');
 const {register} = require('../../util/web_worker_transfer');
-const {PossiblyEvaluatedPropertyValue} = require('../../style/properties');
 
 import type {
     Bucket,
@@ -277,6 +276,7 @@ class SymbolBucket implements Bucket {
     overscaling: number;
     layers: Array<SymbolStyleLayer>;
     layerIds: Array<string>;
+    stateDependentLayers: Array<SymbolStyleLayer>;
     index: number;
     sdfIcons: boolean;
     iconsNeedLinear: boolean;
@@ -303,8 +303,6 @@ class SymbolBucket implements Bucket {
     collisionCircle: CollisionBuffers;
     uploaded: boolean;
     changed: boolean;
-    stateDependentText: boolean;
-    stateDependentIcon: boolean;
 
     constructor(options: BucketParameters<SymbolStyleLayer>) {
         this.collisionBoxArray = options.collisionBoxArray;
@@ -329,21 +327,6 @@ class SymbolBucket implements Bucket {
     createArrays() {
         this.text = new SymbolBuffers(new ProgramConfigurationSet(symbolLayoutAttributes.members, this.layers, this.zoom, property => /^text/.test(property)));
         this.icon = new SymbolBuffers(new ProgramConfigurationSet(symbolLayoutAttributes.members, this.layers, this.zoom, property => /^icon/.test(property)));
-
-        this.layers.forEach((layer) => {
-            for (const property in layer.paint._values) {
-                const value = layer.paint.get(property);
-                if (!(value instanceof PossiblyEvaluatedPropertyValue) || !value.property.specification['property-function']) {
-                    continue;
-                }
-
-                if ((value.value.kind === 'source' || value.value.kind === 'composite') &&
-                    value.value.isStateDependent) {
-                    if (/^text/.test(property)) this.stateDependentText = true;
-                    else if (/^icon/.test(property)) this.stateDependentIcon = true;
-                }
-            }
-        });
 
         this.collisionBox = new CollisionBuffers(CollisionBoxLayoutArray, collisionBoxLayout.members, LineIndexArray);
         this.collisionCircle = new CollisionBuffers(CollisionCircleLayoutArray, collisionCircleLayout.members, TriangleIndexArray);
@@ -437,11 +420,9 @@ class SymbolBucket implements Bucket {
     }
 
     update(states: FeatureStates, vtLayer: VectorTileLayer) {
-        if (this.stateDependentText) {
-            this.changed = this.text.programConfigurations.updatePaintArrays(states, vtLayer, this.layers);
-        } if (this.stateDependentIcon) {
-            this.changed = this.changed || this.icon.programConfigurations.updatePaintArrays(states, vtLayer, this.layers);
-        }
+        if (!this.stateDependentLayers.length) return;
+        this.changed = this.text.programConfigurations.updatePaintArrays(states, vtLayer, this.layers) ||
+                       this.icon.programConfigurations.updatePaintArrays(states, vtLayer, this.layers);
     }
 
     isEmpty() {
