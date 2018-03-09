@@ -377,11 +377,12 @@ class ProgramConfiguration {
         }
 
         if (feature.id && index) {
-            this._idMap[feature.id] = {
+            this._idMap[feature.id] = this._idMap[feature.id] || [];
+            this._idMap[feature.id].push({
                 index: index,
                 start: this._bufferPos,
                 length: length
-            };
+            });
         }
 
         this._bufferPos = length;
@@ -390,21 +391,24 @@ class ProgramConfiguration {
     updatePaintArrays(featureStates: FeatureStates, vtLayer: VectorTileLayer, layer: TypedStyleLayer): boolean {
         let dirty: boolean = false;
         for (const id in featureStates) {
-            const pos = this._idMap[id];
+            const posArray = this._idMap[id];
 
-            if (pos) {
-                const feature: any = vtLayer.feature(pos.index);
-                feature.state = featureStates[id];
+            if (posArray) {
+                for (let i = 0; i < posArray.length; i++) {
+                    const pos = posArray[i];
+                    const feature: any = vtLayer.feature(pos.index);
+                    feature.state = featureStates[id];
 
-                for (const property in this.binders) {
-                    const binder: Binder<any> = this.binders[property];
-                    if (binder instanceof ConstantBinder) continue;
-                    if ((binder: any).expression.isStateDependent === true) {
-                        //AHM: Remove after https://github.com/mapbox/mapbox-gl-js/issues/6255
-                        const value = layer.paint.get(property);
-                        (binder: any).expression = value.value;
-                        binder.updatePaintArray(pos.start, pos.length, feature);
-                        dirty = true;
+                    for (const property in this.binders) {
+                        const binder: Binder<any> = this.binders[property];
+                        if (binder instanceof ConstantBinder) continue;
+                        if ((binder: any).expression.isStateDependent === true) {
+                            //AHM: Remove after https://github.com/mapbox/mapbox-gl-js/issues/6255
+                            const value = layer.paint.get(property);
+                            (binder: any).expression = value.value;
+                            binder.updatePaintArray(pos.start, pos.length, feature);
+                            dirty = true;
+                        }
                     }
                 }
             }
