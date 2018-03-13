@@ -49,14 +49,19 @@ class Transform {
     _posMatrixCache: {[number]: Float32Array};
     _alignedPosMatrixCache: {[number]: Float32Array};
 
-    constructor(minZoom: ?number, maxZoom: ?number, renderWorldCopies: boolean | void) {
+    constructor(minZoom: ?number, maxZoom: ?number, renderWorldCopies: boolean | void, projection: ?Object) {
         this.tileSize = 512; // constant
 
         this._renderWorldCopies = renderWorldCopies === undefined ? true : renderWorldCopies;
+        this._projection = projection;
         this._minZoom = minZoom || 0;
         this._maxZoom = maxZoom || 22;
 
         this.latRange = [-85.05113, 85.05113];
+
+        if (projection) {
+            util.extend(this, util.pick(projection, ['project', 'unproject', 'latRange']));
+        }
 
         this.width = 0;
         this.height = 0;
@@ -71,7 +76,7 @@ class Transform {
     }
 
     clone(): Transform {
-        const clone = new Transform(this._minZoom, this._maxZoom, this._renderWorldCopies);
+        const clone = new Transform(this._minZoom, this._maxZoom, this._renderWorldCopies, this._projection);
         clone.tileSize = this.tileSize;
         clone.latRange = this.latRange;
         clone.width = this.width;
@@ -271,45 +276,24 @@ class Transform {
     scaleZoom(scale: number) { return Math.log(scale) / Math.LN2; }
 
     project(lnglat: LngLat) {
-        return new Point(
-            this.lngX(lnglat.lng),
-            this.latY(lnglat.lat));
+        let x = (180 + lnglat.lng) * this.worldSize / 360;
+        let y = 180 / Math.PI * Math.log(Math.tan(Math.PI / 4 + lnglat.lat * Math.PI / 360));
+        y = (180 - y) * this.worldSize / 360;
+        return new Point(x, y);
     }
+
 
     unproject(point: Point): LngLat {
-        return new LngLat(
-            this.xLng(point.x),
-            this.yLat(point.y));
+        let lng = point.x * 360 / this.worldSize - 180;
+        let y = 180 - point.y * 360 / this.worldSize;
+        let lat = 360 / Math.PI * Math.atan(Math.exp(y * Math.PI / 180)) - 90;
+        return new LngLat(lng, lat);
     }
 
-    get x(): number { return this.lngX(this.center.lng); }
-    get y(): number { return this.latY(this.center.lat); }
+    get x(): number { return this.point.x; }
+    get y(): number { return this.point.y; }
 
-    get point(): Point { return new Point(this.x, this.y); }
-
-    /**
-     * latitude to absolute x coord
-     * @returns {number} pixel coordinate
-     */
-    lngX(lng: number) {
-        return (180 + lng) * this.worldSize / 360;
-    }
-    /**
-     * latitude to absolute y coord
-     * @returns {number} pixel coordinate
-     */
-    latY(lat: number) {
-        const y = 180 / Math.PI * Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360));
-        return (180 - y) * this.worldSize / 360;
-    }
-
-    xLng(x: number) {
-        return x * 360 / this.worldSize - 180;
-    }
-    yLat(y: number) {
-        const y2 = 180 - y * 360 / this.worldSize;
-        return 360 / Math.PI * Math.atan(Math.exp(y2 * Math.PI / 180)) - 90;
-    }
+    get point(): Point { return this.project(this.center); }
 
     setLocationAtPoint(lnglat: LngLat, point: Point) {
         const translate = this.pointCoordinate(point)._sub(this.pointCoordinate(this.centerPoint));
@@ -344,9 +328,10 @@ class Transform {
      * @returns {Coordinate}
      */
     locationCoordinate(lnglat: LngLat) {
+        let pt = this.project(lnglat);
         return new Coordinate(
-            this.lngX(lnglat.lng) / this.tileSize,
-            this.latY(lnglat.lat) / this.tileSize,
+            pt.x / this.tileSize,
+            pt.y / this.tileSize,
             this.zoom).zoomTo(this.tileZoom);
     }
 
@@ -357,9 +342,7 @@ class Transform {
      */
     coordinateLocation(coord: Coordinate) {
         const zoomedCoord = coord.zoomTo(this.zoom);
-        return new LngLat(
-            this.xLng(zoomedCoord.column * this.tileSize),
-            this.yLat(zoomedCoord.row * this.tileSize));
+        return this.unproject(new Point(zoomedCoord.column * this.tileSize, zoomedCoord.row * this.tileSize));
     }
 
     pointCoordinate(p: Point, zoom?: number) {
@@ -442,17 +425,23 @@ class Transform {
         const size = this.size,
             unmodified = this._unmodified;
 
+        let min = this.project(new LngLat(
+        	this.lngRange ? this.lngRange[0] : 0,
+        	this.latRange ? this.latRange[1] : 0
+        ));
+        let max = this.project(new LngLat(
+        	this.lngRange ? this.lngRange[1] : 0,
+        	this.latRange ? this.latRange[0] : 0
+        ));
         if (this.latRange) {
-            const latRange = this.latRange;
-            minY = this.latY(latRange[1]);
-            maxY = this.latY(latRange[0]);
+            minY = min.y;
+            maxY = max.y;
             sy = maxY - minY < size.y ? size.y / (maxY - minY) : 0;
         }
 
         if (this.lngRange) {
-            const lngRange = this.lngRange;
-            minX = this.lngX(lngRange[0]);
-            maxX = this.lngX(lngRange[1]);
+            minX = min.x;
+            maxX = max.x;
             sx = maxX - minX < size.x ? size.x / (maxX - minX) : 0;
         }
 

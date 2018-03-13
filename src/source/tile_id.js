@@ -31,11 +31,21 @@ export class CanonicalTileID {
         const bbox = WhooTS.getTileBBox(this.x, this.y, this.z);
         const quadkey = getQuadkey(this.z, this.x, this.y);
 
+        let x = this.x,
+        	y = scheme === 'tms' ? (Math.pow(2, this.z) - this.y - 1) : this.y,
+            z = this.z;
+        // 百度瓦片url的特殊处理
+        if (scheme === 'baidu') {
+        	let offset = Math.pow(2, this.z - 1);
+        	x = this.x - offset;
+        	y = offset - this.y - 1;
+        }
+
         return urls[(this.x + this.y) % urls.length]
             .replace('{prefix}', (this.x % 16).toString(16) + (this.y % 16).toString(16))
-            .replace('{z}', String(this.z))
-            .replace('{x}', String(this.x))
-            .replace('{y}', String(scheme === 'tms' ? (Math.pow(2, this.z) - this.y - 1) : this.y))
+            .replace('{z}', String(z))
+            .replace('{x}', String(x))
+            .replace('{y}', String(y))
             .replace('{quadkey}', quadkey)
             .replace('{bbox-epsg-3857}', bbox);
     }

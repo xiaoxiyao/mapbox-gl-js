@@ -211,6 +211,9 @@
         },
         "tms": {
           "doc": "OSGeo spec scheme."
+        },
+        "baidu": {
+          "doc": "scheme for baidu map"
         }
       },
       "default": "xyz",

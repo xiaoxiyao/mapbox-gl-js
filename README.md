@@ -1,3 +1,8 @@
+### 让mapbox支持使用百度地图瓦片
+主要更改：
+1. `MapOptions`增加`projection`参数
+2. `raster source` 的`scheme`参数可以为baidu
+
 [<img width="400" alt="Mapbox" src="docs/pages/assets/logo.png">](https://www.mapbox.com/)
 
 **Mapbox GL JS** is a JavaScript library for interactive, customizable vector maps on the web. It takes map styles that conform to the

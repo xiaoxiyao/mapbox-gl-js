@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mapbox GL JS debug page</title>
+    <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel='stylesheet' href='/dist/mapbox-gl.css' />
+    <style>
+        body { margin: 0; padding: 0; }
+        html, body, #map { height: 100%; }
+    </style>
+</head>
+
+<body>
+<div id='map'></div>
+
+<script src="/debug/baiduMapAPI-2.0.min.js"></script>
+<script src='/dist/mapbox-gl-dev.js'></script>
+<script src='/debug/access_token_generated.js'></script>
+<script>
+    var baiduProjection = {
+        project: function (latlng) {
+            var projection = new BMap.MercatorProjection();
+            // 当经度不在[-180,180]内时，百度api无法计算，这里转换一下
+            var x = 20037726.37;// 经度为180时，百度的投影x坐标
+            var d = 0;
+            var lng = latlng.lng;
+            var lat = latlng.lat;
+            while (lng > 180) {
+                lng -= 180;
+                d += x;
+            }
+            while (lng < -180) {
+                lng += 180;
+                d -= x;
+            }
+            var point = projection.lngLatToPoint(new BMap.Point(lng, lat));
+            var scale = this.worldSize;
+            var trans = Math.pow(2, -26);
+            var mapboxPoint = new mapboxgl.Point(((point.x + d) * trans + 0.5) * scale, (point.y * -trans + 0.5) * scale);
+            return mapboxPoint;
+        },
+        unproject: function (bpoint) {
+            var scale = this.worldSize;
+            var trans = Math.pow(2, -26);
+            var projection = new BMap.MercatorProjection();
+            var point = projection.pointToLngLat(new BMap.Pixel((bpoint.x / scale - 0.5) / trans, (bpoint.y / scale - 0.5) / -trans));
+            var latlng = new mapboxgl.LngLat(point.lng, point.lat);
+            return latlng;
+        }
+    };
+    var map = window.map = new mapboxgl.Map({
+        container: 'map',
+        zoom: 3,
+        center: [116.403906, 39.915175],
+        style: {
+            sources: {
+                test: {
+                    type: 'raster',
+                    'tiles': [
+                        "http://gss1.bdstatic.com/8bo_dTSlRMgBo1vgoIiO_jowehsv/tile/?qt=tile&x={x}&y={y}&z={z}&styles=pl&scaler=1",
+                        "http://gss2.bdstatic.com/8bo_dTSlRMgBo1vgoIiO_jowehsv/tile/?qt=tile&x={x}&y={y}&z={z}&styles=pl&scaler=1",
+                        "http://gss3.bdstatic.com/8bo_dTSlRMgBo1vgoIiO_jowehsv/tile/?qt=tile&x={x}&y={y}&z={z}&styles=pl&scaler=1"
+                    ],
+                    "tileSize": 256,
+                    scheme: 'baidu'
+                }
+            },
+            version: 8,
+            layers: [{
+                "id": "simple-tiles",
+                "type": "raster",
+                "source": "test"
+            }]
+        },
+        projection: baiduProjection
+    });
+    new mapboxgl.Marker()
+        .setLngLat([116.403906, 39.915175])
+        .addTo(map);
+    new mapboxgl.Marker()
+        .setLngLat([114.431027, 30.613078])
+        .addTo(map);
+    map.on('zoom',function(){
+        console.log('zoom',map.getZoom());
+    });
+</script>
+</body>
+</html>
