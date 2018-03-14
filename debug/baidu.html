@@ -47,7 +47,8 @@
             var point = projection.pointToLngLat(new BMap.Pixel((bpoint.x / scale - 0.5) / trans, (bpoint.y / scale - 0.5) / -trans));
             var latlng = new mapboxgl.LngLat(point.lng, point.lat);
             return latlng;
-        }
+        },
+        lngRange: [-180, 180]
     };
     var map = window.map = new mapboxgl.Map({
         container: 'map',

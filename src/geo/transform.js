@@ -4,7 +4,7 @@ import LngLat from './lng_lat';
 
 import Point from '@mapbox/point-geometry';
 import Coordinate from './coordinate';
-import { wrap, clamp } from '../util/util';
+import { wrap, clamp, extend } from '../util/util';
 import {number as interpolate} from '../style-spec/util/interpolate';
 import tileCover from '../util/tile_cover';
 import { CanonicalTileID, UnwrappedTileID } from '../source/tile_id';
@@ -60,7 +60,7 @@ class Transform {
         this.latRange = [-85.05113, 85.05113];
 
         if (projection) {
-            util.extend(this, util.pick(projection, ['project', 'unproject', 'latRange']));
+            extend(this, projection);
         }
 
         this.width = 0;
